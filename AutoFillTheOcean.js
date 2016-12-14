@@ -11,6 +11,7 @@
 (function() {
     'use strict';
     var ScriptSettings = {
+        OceanVersion:"0.1.11",
         AutoDropClick: false,
         AutoClickSpeed: 500,
         AutoClouds: false,
@@ -112,6 +113,11 @@
         document.getElementById('pageScript').appendChild(CreateRow('Always clickstorm', CreateToggleButton("AlwaysClickstorm")));
         document.getElementById('pageScript').appendChild(CreateRow('Always wrath', CreateToggleButton("AlwaysWrath")));
         document.getElementById('pageScript').appendChild(CreateRow('Hide notices', CreateToggleButton("HideNotice")));
+
+        //Make checked toggles red if out of date.
+        if (ScriptSettings.OceanVersion != Game.version){
+            AddStyle('input.cmn-toggle-round:checked + label:before {background-color: #FF0000;}');
+        }
 
     }
     $('#pagenav .tabs').click(function(){
