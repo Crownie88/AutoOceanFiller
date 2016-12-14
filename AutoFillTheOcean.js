@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoOceanFiller
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  Auto clicker for Fill the Oceans
 // @author       Crownie88
 // @match        http://www.filltheoceans.com/
@@ -14,14 +14,22 @@
         AutoDropClick: false,
         AutoClickSpeed: 500,
         AutoClouds: false,
-        AutoAlienClick: true,
+        AutoAlienClick: false,
         AutoBuyUpgrades: false,
+        AlwaysHaveStorm: false,
+        AlwaysHaveClickstorm: false,
+        AlwaysHaveWrath: false,
+        HideNotice: false,
         CloudAlienSpeed: 100,
         AutoBuy: false,
         DropClickTimer: null,
         CloudClickTimer: null,
         AlienClickTimer: null,
-        UpgradeBuyTimer: null
+        UpgradeBuyTimer: null,
+        StormTimer: null,
+        ClickstormTimer: null,
+        WrathTimer: null,
+        RemoveNoticeTimer: null
     };
     //Button to change script settings
     var btnSettings = document.createElement('button');
@@ -100,6 +108,11 @@
         document.getElementById('pageScript').appendChild(CreateRow('Auto click aliens', CreateToggleButton("AutoClickUfo")));
         document.getElementById('pageScript').appendChild(CreateRow('Auto buy upgrades', CreateToggleButton("AutoBuyUpgrades")));
 
+        document.getElementById('pageScript').appendChild(CreateRow('Always storm', CreateToggleButton("AlwaysStorm")));
+        document.getElementById('pageScript').appendChild(CreateRow('Always clickstorm', CreateToggleButton("AlwaysClickstorm")));
+        document.getElementById('pageScript').appendChild(CreateRow('Always wrath', CreateToggleButton("AlwaysWrath")));
+        document.getElementById('pageScript').appendChild(CreateRow('Hide notices', CreateToggleButton("HideNotice")));
+
     }
     $('#pagenav .tabs').click(function(){
         if ($(this).attr('id') != "aofSettings"){
@@ -135,6 +148,28 @@
         }
     }
 
+    function UseStorm(){
+        if (Game.storm != 1){
+            Game._cloudGivesStorm();
+        }
+    }
+
+    function UseClickstorm(){
+        if (Game.clickstorm != 1){
+            Game.clickstorm = 1;
+        }
+    }
+
+    function UseWrath(){
+        if (Game.wrath != 1){
+            Game._cloudGivesWrath();
+        }
+    }
+
+    function RemoveNotices(){
+        $('#notices .notice').each(function(){$(this).click();});
+    }
+
     function SettingsChanged(){
         //Clear and set intervals
         if (ScriptSettings.AutoDropClick){
@@ -163,6 +198,38 @@
         }
         if (ScriptSettings.AutoBuyUpgrades){
             ScriptSettings.UpgradeBuyTimer = setInterval(BuyUpgrades, ScriptSettings.CloudAlienSpeed);
+        }else{
+            if (ScriptSettings.UpgradeBuyTimer !== null){
+                clearInterval(ScriptSettings.UpgradeBuyTimer);
+            }
+        }
+        if (ScriptSettings.AlwaysHaveStorm){
+            ScriptSettings.StormTimer = setInterval(UseStorm, ScriptSettings.CloudAlienSpeed);
+        }else{
+            if (ScriptSettings.StormTimer !== null){
+                clearInterval(ScriptSettings.StormTimer);
+            }
+        }
+        if (ScriptSettings.AlwaysHaveClickstorm){
+            ScriptSettings.ClickstormTimer = setInterval(UseClickstorm, ScriptSettings.CloudAlienSpeed);
+        }else{
+            if (ScriptSettings.ClickstormTimer !== null){
+                clearInterval(ScriptSettings.ClickstormTimer);
+            }
+        }
+        if (ScriptSettings.AlwaysHaveWrath){
+            ScriptSettings.WrathTimer = setInterval(UseWrath, ScriptSettings.CloudAlienSpeed);
+        }else{
+            if (ScriptSettings.WrathTimer !== null){
+                clearInterval(ScriptSettings.WrathTimer);
+            }
+        }
+        if (ScriptSettings.HideNotice){
+            ScriptSettings.RemoveNoticeTimer = setInterval(RemoveNotices, 10);
+        }else{
+            if (ScriptSettings.RemoveNoticeTimer !== null){
+                clearInterval(ScriptSettings.RemoveNoticeTimer);
+            }
         }
     }
 
@@ -188,7 +255,25 @@
         SettingsChanged();
     });
 
-    
+    $('#AutoClickUfo').change(function(){
+        ScriptSettings.AutoAlienClick = $('#AutoClickUfo')[0].checked;
+        SettingsChanged();
+    });
+
+    $('#AlwaysStorm').change(function(){
+        ScriptSettings.AlwaysHaveStorm = $('#AlwaysStorm')[0].checked;
+        SettingsChanged();
+    });
+
+    $('#AlwaysClickstorm').change(function(){
+        ScriptSettings.AlwaysHaveClickstorm = $('#AlwaysClickstorm')[0].checked;
+        SettingsChanged();
+    });
+
+    $('#AlwaysWrath').change(function(){
+        ScriptSettings.AlwaysHaveWrath = $('#AlwaysWrath')[0].checked;
+        SettingsChanged();
+    });
 
     $('#AutoBuyUpgrades').change(function(){
         ScriptSettings.AutoBuyUpgrades = $('#AutoBuyUpgrades')[0].checked;
@@ -196,6 +281,11 @@
     });
 
     $('#spdslider').change(function(){
+        SettingsChanged();
+    });
+
+    $('#HideNotice').change(function(){
+        ScriptSettings.HideNotice = $('#HideNotice')[0].checked;
         SettingsChanged();
     });
 
