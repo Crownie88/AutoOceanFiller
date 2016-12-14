@@ -161,8 +161,8 @@
     }
 
     function UseClickstorm(){
-        if (Game.clickstorm != 1){
-            Game.clickstorm = 1;
+        if (Game.clickStorm != 1){
+            Game.clickStorm = 1;
         }
     }
 
